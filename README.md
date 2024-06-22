@@ -1,5 +1,6 @@
 # search-admin
-## Ссылка на задание:
+## Ссылка на задание: https://paper.dropbox.com/doc/Frontend-Engineer-GFOYvLYpCLWUJe59Ydfmw
+Использовал api gitHub не сделал отображение пользователей так как есть органичение на 60 запросов в час но есть поиск по имени с выводом данных о пользователе
 ## Запуск
 git clone https://github.com/DoNaT1kl/search-admin.git
 ___
