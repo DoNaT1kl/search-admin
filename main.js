@@ -1,30 +1,58 @@
-let users = []; // Массив для хранения пользователей
+const mainEl = document.querySelector('.main');
+const wrapper = document.createElement('div')
+wrapper.classList.add('profiles')
 
-// Функция для получения пользователей
-async function getUsers(searchTerm) {
-	const response = await fetch(`/api/users?searchTerm=${searchTerm}`);
-	const data = await response.json();
-	users = data.result;
-	displayUsers();
+const formEl = document.createElement('form');
+formEl.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const inputsValue = Object.fromEntries(new FormData(e.target));
+  const response = await fetch(`
+    https://api.github.com/users/${inputsValue.name}
+  `);
+
+  if (response.ok) {
+    const data = await response.json();
+    wrapper.appendChild(createProfileEl(data))
+    mainEl.appendChild(wrapper);
+    inputEl.value = '';
+  } else {
+    alert("Пользователь не найден")
+  }
+})
+
+const inputEl = document.createElement('input');
+inputEl.classList.add('search-input');
+inputEl.setAttribute('name', 'name')
+
+const searchButtonEl = document.createElement('button')
+searchButtonEl.classList.add('search-button');
+searchButtonEl.setAttribute('type', 'submit');
+searchButtonEl.innerHTML = "Поиск";
+
+formEl.appendChild(inputEl);
+formEl.appendChild(searchButtonEl);
+mainEl.appendChild(formEl);
+
+function createProfileEl(profileData) {
+  const element = document.createElement('div');
+  element.classList.add('profile');
+  element.innerHTML = `
+    <img class="search-image" src=${profileData.avatar_url}></img>
+    <p class="search-text"><span>Имя: </span>${profileData.name}</p>
+    <p class="search-text"><span>Город: </span>${profileData.location}</p>
+    <p class="search-text"><span>О себе: </span>${profileData.bio}</p>
+  `
+  element.appendChild(createDeleteBtnEl())
+  return element;
 }
 
-// Функция для отображения пользователей
-function displayUsers() {
-	const usersContainer = document.getElementById('usersContainer');
-	usersContainer.innerHTML = '';
-	for (let user of users) {
-		const userElement = document.createElement('div');
-		const avatar = document.createElement('img');
-		avatar.src = user.avatarUrl;
-		const name = document.createElement('p');
-		name.textContent = user.name;
-		userElement.appendChild(avatar);
-		userElement.appendChild(name);
-		usersContainer.appendChild(userElement);
-	}
-}
+function createDeleteBtnEl() {
+  const element = document.createElement('button');
+  element.classList.add('delete-button');
+  element.innerText = "Удалить";
+  element.addEventListener('click', (e) => {
+    e.target.parentElement.remove();
+  })
 
-// Обработчик события ввода для строки поиска
-document.getElementById('searchInput').addEventListener('input', (event) => {
-	getUsers(event.target.value);
-});
+  return element
+}
